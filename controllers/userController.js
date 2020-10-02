@@ -1,5 +1,6 @@
 const User = require('./../models/userModel')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 /*****************************************************
  GET ALL USERS
@@ -34,16 +35,25 @@ exports.createUser = async (req, res) => {
     }
     // encrypt the password before inserting into the database
     const hash = await bcrypt.hash(password, 10)
-    req.body = {
-      firstName,
-      lastName,
-      email,
-      password: hash
+    // reassign the password property to the encrypted password
+    req.body.password = hash
+    // create user
+    const newUser = await User.create(req.body)
+    // find the newly created user in the database
+    const user = await User.find({ email })
+    // save the userId
+    const userId = user[0]._id
+    // create the payload
+    const payload = {
+      userId
     }
-    const user = await User.create(req.body)
+    // create the token
+    const token = await jwt.sign(payload, process.env.JWT_SECRET)
+    // send the token back with the response
     res.json({
       success: true,
-      user
+      newUser,
+      token
     })
   } catch (error) {
     console.log(error.message)
@@ -79,9 +89,50 @@ exports.userLogin = async (req, res) => {
         message: 'Credentials do not match'
       })
     }
+    // save the userId
+    const userId = user[0]._id
+    // create the payload
+    const payload = {
+      userId
+    }
+    // create the token
+    const token = await jwt.sign(payload, process.env.JWT_SECRET)
+    // send the token back with the response
     return res.json({
       success: true,
-      message: 'User is now logged in!'
+      message: 'User is now logged in!',
+      token
+    })
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+
+/*****************************************************
+ Update User
+*****************************************************/
+exports.updateUser = async (req, res) => {
+  try {
+    const user = await User.updateOne({ _id: req.user.userId }, req.body)
+    return res.json({
+      success: true,
+      message: 'User has been updated',
+      user
+    })
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+
+/*****************************************************
+ Delete User
+*****************************************************/
+exports.deleteUser = async (req, res) => {
+  try {
+    await User.deleteOne({ _id: req.user.userId })
+    return res.json({
+      success: true,
+      message: 'User has been deleted'
     })
   } catch (error) {
     console.log(error.message)
