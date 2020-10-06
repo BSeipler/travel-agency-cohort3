@@ -8,7 +8,8 @@ const {
   createUser,
   userLogin,
   updateUser,
-  deleteUser
+  deleteUser,
+  getOneUser
 } = userController
 
 router.get('/', getUsers)
@@ -20,5 +21,7 @@ router.patch('/', verifyToken, updateUser)
 router.delete('/', verifyToken, deleteUser)
 
 router.post('/login', userLogin)
+
+router.get('/getOneUser', verifyToken, getOneUser)
 
 module.exports = router

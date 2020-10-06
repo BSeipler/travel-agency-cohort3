@@ -23,12 +23,12 @@ exports.getUsers = async (req, res) => {
 exports.createUser = async (req, res) => {
   try {
     // destructuring the req body
-    const { firstName, lastName, email, password } = req.body
+    const { email, password } = req.body
     // check if user already exists by email
     const doesExist = await User.exists({ email })
     // if a user exists, send back an error : add them to the database
     if (doesExist) {
-      return res.json({
+      return res.status(201).json({
         success: false,
         message: 'User already exists'
       })
@@ -133,6 +133,21 @@ exports.deleteUser = async (req, res) => {
     return res.json({
       success: true,
       message: 'User has been deleted'
+    })
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+
+/*****************************************************
+ Get One User
+*****************************************************/
+exports.getOneUser = async (req, res) => {
+  try {
+    const user = await User.find({ _id: req.user.userId })
+    return res.json({
+      success: true,
+      user
     })
   } catch (error) {
     console.log(error.message)
