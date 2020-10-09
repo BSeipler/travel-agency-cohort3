@@ -4,6 +4,7 @@ const express = require('express')
 const userRoute = require('./routes/userRoute')
 const mongoDb = require('./utils/database')
 const tripRoute = require('./routes/tripRoute')
+const bookingRoute = require('./routes/bookingRoute')
 
 const app = express()
 
@@ -11,6 +12,7 @@ const app = express()
 app.use(express.json())
 app.use('/api/v1/users', userRoute)
 app.use('/api/v1/trips', tripRoute)
+app.use('/api/v1/bookings', bookingRoute)
 
 // assign the port
 const port = process.env.PORT || 6428

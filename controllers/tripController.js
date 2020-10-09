@@ -21,8 +21,22 @@ exports.createTrip = async (req, res) => {
 *****************************************************/
 exports.getTrips = async (req, res) => {
   try {
-    const trips = await Trip.find()
-    res.json({
+    let trips
+    const {
+      cost
+    } = req.query
+
+    if (req.query) {
+      if (cost) {
+        cost = {
+          $lte: cost
+        }
+      }
+      trips = await Trip.find(req.query)
+    } else {
+      trips = await Trip.find()
+    }
+    return res.json({
       success: true,
       trips
     })
@@ -36,7 +50,9 @@ exports.getTrips = async (req, res) => {
 *****************************************************/
 exports.getOneTrip = async (req, res) => {
   try {
-    const trip = await Trip.find({ _id: req.params.id })
+    const trip = await Trip.find({
+      _id: req.params.id
+    })
     return res.json({
       success: true,
       trip
@@ -51,7 +67,9 @@ exports.getOneTrip = async (req, res) => {
 *****************************************************/
 exports.updateTrip = async (req, res) => {
   try {
-    const trip = await Trip.updateOne({ _id: req.params.id }, req.body)
+    const trip = await Trip.updateOne({
+      _id: req.params.id
+    }, req.body)
     return res.json({
       success: true,
       trip
@@ -66,25 +84,12 @@ exports.updateTrip = async (req, res) => {
 *****************************************************/
 exports.deleteTrip = async (req, res) => {
   try {
-    const trip = await Trip.deleteOne({ _id: req.params.id })
+    const trip = await Trip.deleteOne({
+      _id: req.params.id
+    })
     return res.json({
       success: true,
       trip
-    })
-  } catch (error) {
-    console.log(error.message)
-  }
-}
-
-/*****************************************************
- Get Trips By Region
-*****************************************************/
-exports.getTripsByRegion = async (req, res) => {
-  try {
-    const trips = await Trip.find({ region: req.params.region })
-    res.json({
-      success: true,
-      trips
     })
   } catch (error) {
     console.log(error.message)

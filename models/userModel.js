@@ -9,7 +9,10 @@ const userSchema = mongoose.Schema({
   firstName: reqString,
   lastName: reqString,
   email: reqString,
-  password: reqString
+  password: reqString,
+  bookedTrips: [{
+    tripId: String
+  }]
 })
 
 module.exports = mongoose.model('User', userSchema)
